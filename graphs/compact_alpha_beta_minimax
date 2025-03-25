@@ -1,0 +1,36 @@
+digraph "Alpha-Beta Minimax" {
+	nodesep=0.15 rankdir=TB ranksep=0.25
+	start [label="Start Minimax (node, depth, α, β, maximizingPlayer)" shape=ellipse]
+	base_check [label="Depth = 0 or terminal state? (Leaf node condition)" shape=diamond]
+	return_heuristic [label="Return heuristic value" shape=parallelogram]
+	max_turn [label="Maximizing Player
+maxEval = -∞" shape=box]
+	max_loop [label="For each child:
+Minimax(child, depth-1, α, β, False)" shape=box]
+	max_update [label="maxEval = max(maxEval, eval)
+α = max(α, eval)" shape=box]
+	max_prune [label="β ≤ α if yes pruning occurs" shape=diamond]
+	min_turn [label="Minimizing Player
+minEval = +∞" shape=box]
+	min_loop [label="For each child:
+Minimax(child, depth-1, α, β, True)" shape=box]
+	min_update [label="minEval = min(minEval, eval)
+β = min(β, eval)" shape=box]
+	min_prune [label="β ≤ α if yes pruning occurs" shape=diamond]
+	return_eval [label="Return best evaluation (maxEval or minEval) based on strategy" shape=parallelogram]
+	start -> base_check
+	base_check -> return_heuristic [label=Yes]
+	base_check -> max_turn [label=" No, Maximizing"]
+	base_check -> min_turn [label="No, Minimizing"]
+	max_turn -> max_loop
+	max_loop -> max_update
+	max_update -> max_prune
+	max_prune -> return_eval [label=Yes]
+	max_prune -> max_loop [label=No]
+	min_turn -> min_loop
+	min_loop -> min_update
+	min_update -> min_prune
+	min_prune -> return_eval [label=Yes]
+	min_prune -> min_loop [label=No]
+	return_eval -> start [label=" Recursive return to parent node"]
+}
