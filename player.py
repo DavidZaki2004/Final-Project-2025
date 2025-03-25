@@ -28,9 +28,6 @@ class HumanPlayer(Player):
                 print("Invalid move. Try again.")
         return val
 
-import math
-import random
-
 class ab_minimax(Player):
     def __init__(self, letter, max_depth=3):
         """
@@ -63,7 +60,7 @@ class ab_minimax(Player):
 
         return best_move
 
-    def minimax(self, state, player, alpha=-math.inf, beta=math.inf, depth=0, max_depth=10):
+    def minimax(self, state, player, alpha=-math.inf, beta=math.inf, depth=0, max_depth=4):
         """
         Performs the Minimax algorithm with Alpha-Beta pruning.
 

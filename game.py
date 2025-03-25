@@ -123,10 +123,10 @@ def run_connect4(game, x_player, o_player, print_game=True):
 
 def choose_game():
     """Prompts the user to select between Tic-Tac-Toe and Connect 4."""
-    print("Choose a game to play:")
+    print("\nChoose a game to play:")
     print("1. Tic Tac Toe")
     print("2. Connect 4")
-    choice = input("Enter your choice (1 or 2): ")
+    choice = input("\nEnter your choice (1 or 2): ")
     while choice not in ["1", "2"]:
         print("Invalid choice. Please select 1 or 2.")
         choice = input("Enter your choice (1 or 2): ")
@@ -144,11 +144,11 @@ def choose_player(player_number, game_type):
     Returns:
         Player: An instance of the selected player class.
     """
-    print(f"Choose Player {player_number} for {game_type}:")
+    print(f"\nChoose Player {player_number} for {game_type}:")
     print("1. Human Player")
     print("2. A-B Minimax ")
     print("3. Monte-Carlo Tree Search")
-    choice = input("Enter your choice (1, 2, 3): ")
+    choice = input("\nEnter your choice (1, 2, 3): ")
     while choice not in ["1", "2", "3"]:
         print("Invalid choice. Please select 1, 2, or 3.")
         choice = input("Enter your choice (1, 2, 3): ")
@@ -162,7 +162,7 @@ def choose_player(player_number, game_type):
 
 def run_experiment():
     """Runs multiple automated games for statistical analysis."""
-    print("Welcome to the Experiment Mode!")
+    print(f"\nWelcome to the Experiment Mode!")
     game_choice = choose_game()
     game_type = "Tic Tac Toe" if game_choice == 1 else "Connect 4"
     x_player = choose_player(1, game_type)
@@ -184,7 +184,7 @@ if __name__ == "__main__":
     while True:
         print("\n1. Play a single game")
         print("2. Run an experiment (multiple games)")
-        mode = input("Choose an option (1 or 2): ")
+        mode = input("\nChoose an option (1 or 2): ")
         if mode == "1":
             game_choice = choose_game()
             game = TicTacToe() if game_choice == 1 else Connect4()

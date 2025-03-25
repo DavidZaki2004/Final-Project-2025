@@ -137,8 +137,10 @@ def play_tictactoe(game, x_player, o_player, print_game=True, move_times=None, g
         # Step 3: Retrieve move values if MCTS is used
         move_values = {}
         move_percentages = {}
-        if isinstance(x_player, MCTSPlayer) or isinstance(o_player, MCTSPlayer):
-            move_values, move_percentages = x_player.get_move_values(game) if letter == "X" else o_player.get_move_values(game)
+        if hasattr(x_player, "get_move_values") and letter == "X":
+                    move_values, move_percentages = x_player.get_move_values(game)
+        elif hasattr(o_player, "get_move_values") and letter == "O":
+            move_values, move_percentages = o_player.get_move_values(game)
 
         # Step 4: The player makes a move
         square = o_player.get_move(game) if letter == "O" else x_player.get_move(game)
@@ -168,10 +170,10 @@ def play_tictactoe(game, x_player, o_player, print_game=True, move_times=None, g
                 game.print_board()
                 print()
 
-                if move_percentages:
-                    print(f"Move choices by MCTS (percentages): {move_percentages}")
-                if move_values:
-                    print(f"Move values by Minimax: {move_values}")
+                # if move_percentages:
+                #     print(f"Move choices by MCTS (percentages): {move_percentages}")
+                # if move_values:
+                #     print(f"Move values by Minimax: {move_values}")
 
             # Step 9: Check for a winner
             if game.current_winner:
