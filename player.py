@@ -29,7 +29,7 @@ class HumanPlayer(Player):
         return val
 
 class ab_minimax(Player):
-    def __init__(self, letter, max_depth=3):
+    def __init__(self, letter, max_depth=4):
         """
         Alpha-Beta Pruned Minimax Player.
         
@@ -43,26 +43,31 @@ class ab_minimax(Player):
     def get_move(self, game):
         """
         Determines the best move using the Alpha-Beta Pruned Minimax algorithm.
-
-        Args:
-            game: The game state.
-
-        Returns:
-            int: The best column to drop a piece in.
+        Prioritizes immediate winning moves before running the full search.
         """
-        move_values, _ = self.get_move_values(game)  # Get minimax evaluations
-        best_move = max(move_values, key=move_values.get)  # Choose best move
+        # Step 1: Check for Immediate Wins
+        for move in game.available_moves():
+            temp_game = game.copy()
+            temp_game.make_move(move, self.letter)
+            if temp_game.current_winner == self.letter:
+                # print(f"\nMinimax instantly selects move {move} as it leads to an immediate win!")
+                return move  # Prioritize instant win
 
-        # Print Minimax move evaluations similar to MCTS
+        # Step 2: Run Minimax if No Immediate Win Found
+        move_values, _ = self.get_move_values(game)  
+        best_move = max(move_values, key=move_values.get)  
+
+        # Print Minimax move evaluations
         print("\nMinimax Move Evaluations:")
         for move, value in sorted(move_values.items(), key=lambda x: x[1], reverse=True):
             print(f"Move {move}: Evaluation Score = {value:.3f}")
 
         return best_move
 
-    def minimax(self, state, player, alpha=-math.inf, beta=math.inf, depth=0, max_depth=4):
+
+    def minimax(self, state, player, alpha=-math.inf, beta=math.inf, depth=10, max_depth=4):
         """
-        Performs the Minimax algorithm with Alpha-Beta pruning.
+        Performs the Minimax algorithm with Alpha-Beta pruning. 
 
         Args:
             state: The current game state.
@@ -161,7 +166,7 @@ class ab_minimax(Player):
 
 # courtesy of the code provided by Hayoung-Kim for making this possible || https://github.com/hayoung-kim/mcts-tic-tac-toe
 class MCTSPlayer:
-    def __init__(self, letter, n_iterations=1500, depth=15, exploration_constant=20):
+    def __init__(self, letter, n_iterations=2000, depth=15, exploration_constant=20):
         self.letter = letter
         self.n_iterations = n_iterations
         self.depth = depth

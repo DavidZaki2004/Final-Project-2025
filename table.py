@@ -128,11 +128,11 @@ def analyze_results(filters=None, sort_by="Win Ratio (X)"):
 
 if __name__ == "__main__":
 
-    print("\nFiltered by X Iterations = 2000 and O Depth = 3:")
-    analyze_results(filters={"X Iterations": 2000, "O Depth": 3})
+    # print("\nFiltered by X Iterations = 3000 and O Depth = 2:")
+    # analyze_results(filters={"X Iterations": 1500, "O Depth": 3})
 
-    print("\nFiltered by O Iterations = 2000 and X Depth = 3:")
-    analyze_results(filters={"O Iterations": 2000, "X Depth": 3})
+
+    analyze_results(filters={"O Iterations": 2000, "X Depth": 4})
 
 
 
