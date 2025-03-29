@@ -30,56 +30,26 @@ class HumanPlayer(Player):
 
 class ab_minimax(Player):
     def __init__(self, letter, max_depth=4):
-        """
-        Alpha-Beta Pruned Minimax Player.
-        
-        Args:
-            letter (str): The player's letter ('X' or 'O').
-            max_depth (int): The maximum search depth for minimax.
-        """
         super().__init__(letter)
         self.max_depth = max_depth
 
     def get_move(self, game):
-        """
-        Determines the best move using the Alpha-Beta Pruned Minimax algorithm.
-        Prioritizes immediate winning moves before running the full search.
-        """
-        # Step 1: Check for Immediate Wins
         for move in game.available_moves():
             temp_game = game.copy()
             temp_game.make_move(move, self.letter)
             if temp_game.current_winner == self.letter:
-                # print(f"\nMinimax instantly selects move {move} as it leads to an immediate win!")
                 return move  # Prioritize instant win
 
-        # Step 2: Run Minimax if No Immediate Win Found
-        move_values, _ = self.get_move_values(game)  
-        best_move = max(move_values, key=move_values.get)  
+        move_values, _ = self.get_move_values(game)
+        best_move = max(move_values, key=move_values.get)
 
-        # Print Minimax move evaluations
         print("\nMinimax Move Evaluations:")
         for move, value in sorted(move_values.items(), key=lambda x: x[1], reverse=True):
             print(f"Move {move}: Evaluation Score = {value:.3f}")
 
         return best_move
 
-
-    def minimax(self, state, player, alpha=-math.inf, beta=math.inf, depth=10, max_depth=4):
-        """
-        Performs the Minimax algorithm with Alpha-Beta pruning. 
-
-        Args:
-            state: The current game state.
-            player (str): The player making the move ('X' or 'O').
-            alpha (float): The best already guaranteed score for maximizer.
-            beta (float): The best already guaranteed score for minimizer.
-            depth (int): The current depth of the recursive call.
-            max_depth (int): The maximum search depth.
-
-        Returns:
-            dict: A dictionary with 'position' (best move) and 'score' (evaluation value).
-        """
+    def minimax(self, state, player, alpha=-math.inf, beta=math.inf, depth=10):
         max_player = self.letter
         other_player = "O" if player == "X" else "X"
 
@@ -89,23 +59,23 @@ class ab_minimax(Player):
         if not state.empty_squares():
             return {"position": None, "score": 0}
 
-        if depth == max_depth:
+        if depth == self.max_depth:
             return {"position": None, "score": self.evaluate_state(state)}
 
         best = {"position": None, "score": -math.inf if player == max_player else math.inf}
 
         for col in state.available_moves():
             temp_state = self.simulate_move(state, col, player)
-            sim_score = self.minimax(temp_state, other_player, alpha, beta, depth + 1, max_depth)
+            sim_score = self.minimax(temp_state, other_player, alpha, beta, depth + 1)
             sim_score["position"] = col
 
             if player == max_player:
                 if sim_score["score"] > best["score"]:
-                    best = sim_score
+                    best = {"position": col, "score": sim_score["score"]}
                 alpha = max(alpha, best["score"])
             else:
                 if sim_score["score"] < best["score"]:
-                    best = sim_score
+                    best = {"position": col, "score": sim_score["score"]}
                 beta = min(beta, best["score"])
 
             if beta <= alpha:
@@ -114,55 +84,46 @@ class ab_minimax(Player):
         return best
 
     def simulate_move(self, state, col, player):
-        """
-        Simulates a move by copying the game state and applying the move.
-
-        Args:
-            state: The current game state.
-            col (int): The column to drop a piece in.
-            player (str): The player making the move.
-
-        Returns:
-            The new game state after the move.
-        """
         temp_state = state.copy()
         temp_state.make_move(col, player)
         return temp_state
 
     def evaluate_state(self, state):
-        """
-        Evaluates the board state.
-
-        Args:
-            state: The game state.
-
-        Returns:
-            int: The evaluation score.
-        """
         if state.current_winner == self.letter:
-            return 1
+            return 10
         elif state.current_winner == ("O" if self.letter == "X" else "X"):
-            return -1
-        return 0
+            return -10
+
+        score = 0
+
+        # **Handle center position safely**
+        center = None
+        if hasattr(state, 'size') and state.size == 3:
+            center = 4  # Tic-Tac-Toe center
+        elif hasattr(state, 'width'):
+            center = state.width // 2  # Connect 4 center
+
+        if center is not None and 0 <= center < len(state.board) and state.board[center] == self.letter:
+            score += 2  # Reward center control
+
+        # **Count two-in-a-row patterns (defensive & offensive)**
+        if hasattr(state, "get_potential_wins"):  # Ensure method exists
+            for line in state.get_potential_wins():
+                if line.count(self.letter) == 2 and line.count(" ") == 1:
+                    score += 5  # Good for attacking
+                if line.count(("O" if self.letter == "X" else "X")) == 2 and line.count(" ") == 1:
+                    score -= 5  # Good for blocking
+
+        return score
 
     def get_move_values(self, game):
-        """
-        Computes evaluation scores for all possible moves.
-
-        Args:
-            game: The current game state.
-
-        Returns:
-            dict: A dictionary of move evaluations.
-        """
         move_values = {}
         for move in game.available_moves():
             temp_game = game.copy()
             temp_game.make_move(move, self.letter)
-            move_values[move] = self.minimax(temp_game, self.letter)["score"]
+            move_values[move] = self.minimax(temp_game, ("O" if self.letter == "X" else "X"), alpha=-math.inf, beta=math.inf, depth=1)["score"]
 
         return move_values, None  # Minimax does not return percentages
-
 
 # courtesy of the code provided by Hayoung-Kim for making this possible || https://github.com/hayoung-kim/mcts-tic-tac-toe
 class MCTSPlayer:

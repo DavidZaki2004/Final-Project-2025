@@ -16,8 +16,8 @@ def update_results(game_type, x_player, o_player, result, move_times, game_moves
     avg_o_time = sum(o_move_times) / len(o_move_times) if o_move_times else 0
 
     # Extracting player-specific parameters
-    x_depth = getattr(x_player, 'minimax', lambda *args, **kwargs: {}).__defaults__[3] if hasattr(x_player, 'minimax') else None
-    o_depth = getattr(o_player, 'minimax', lambda *args, **kwargs: {}).__defaults__[3] if hasattr(o_player, 'minimax') else None
+    x_depth = getattr(x_player, 'max_depth', None)
+    o_depth = getattr(o_player, 'max_depth', None)
     x_iterations = getattr(x_player, 'n_iterations', None)
     o_iterations = getattr(o_player, 'n_iterations', None)
     x_exploration = getattr(x_player, 'exploration_constant', None)
